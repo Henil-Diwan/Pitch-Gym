@@ -11,8 +11,7 @@ The platform addresses a real gap in entrepreneurship education: high-quality pi
 ## Key Features
 
 - **Real-time voice AI conversations** powered by the Vapi Web SDK over WebRTC, with sub-second latency
-- **10 specialized pitch types** — Idea Validation, Elevator Pitch, VC Ready, Product Feedback, Customer Discovery, Technical Pitch, Demo Day, Customer Pitch, Co-Founder Pitch, Investor Skeptic Mode
-- **3 difficulty levels** — Conservative, Balanced, Aggressive
+- **10 specialized pitch types** — each with its own AI investor persona, system prompt, and assessment schema (see [Pitch Types](#pitch-types) below)
 - **Structured multi-metric assessment** — per-category 1–5 scoring, strengths, weaknesses, biggest concern, improvement suggestions
 - **Idea Bank** — manage multiple startup ideas and group sessions by venture
 - **Session context carry-forward** — the AI investor references previous sessions for continuity and progressive coaching
@@ -20,6 +19,27 @@ The platform addresses a real gap in entrepreneurship education: high-quality pi
 - **Time-based credit system** — 1 credit = 1 minute with fractional precision, server-side enforcement via Vapi's `maxDurationSeconds`
 - **Razorpay integration** — dual-verification payment flow with HMAC-SHA256 signature validation and idempotent credit handling
 - **LLM JSON repair pipeline** — graceful recovery from malformed structured output (96% effective success rate)
+
+---
+
+## Pitch Types
+
+Each pitch type runs against a dedicated Vapi assistant with a tailored system prompt and assessment schema. The metrics listed below are the per-category dimensions scored on a 1–5 scale.
+
+| # | Pitch Type | Why It Exists | Assessment Metrics | Duration |
+|---|---|---|---|---|
+| 1 | **Idea Validation** | Test if your problem is real and worth solving before building anything. | Problem Clarity, Customer Definition, Evidence, Communication | Untimed |
+| 2 | **Elevator Pitch** | Deliver a crisp, compelling 60-second pitch that sticks. | Clarity, Memorability, Market Framing, Confidence | 3 min cap |
+| 3 | **VC Ready** | Full investor-style session covering all pillars of a fundable startup. | Business Model, Traction, Go-to-Market, Pressure Handling | Untimed |
+| 4 | **Product Feedback** | Get sharp product critique from an investor's lens. | Product Clarity, Differentiation, UX Quality, Value Prop | Untimed |
+| 5 | **Customer Discovery** | Prove you deeply understand who you're building for and why. | Customer Behavior, Problem Context, Insights, Alternatives | Untimed |
+| 6 | **Technical Pitch** | Defend your architecture and technical decisions to a technical investor. | Architecture, Feasibility, Scalability, Technical Moat | Untimed |
+| 7 | **Demo Day** | Simulate a high-stakes Demo Day presentation under the spotlight. | Storytelling, Market Opportunity, Traction, Stage Presence | 10 min cap |
+| 8 | **Customer Pitch** | Pitch directly to a potential customer and win their buy-in. | Problem Relevance, Value Prop, Workflow Fit, Cost Justification | Untimed |
+| 9 | **Co-Founder Pitch** | Convince a potential co-founder to join your vision. | Vision Clarity, Role Alignment, Commitment, Persuasion | Untimed |
+| 10 | **Investor Skeptic Mode** | Face an aggressive skeptic who challenges every assumption. | Pressure Handling, Competition Defense, Composure, Realism | Untimed |
+
+"Untimed" pitches are bounded only by available credits.
 
 ---
 
@@ -160,7 +180,7 @@ src/
 
 ## How It Works
 
-1. **Configure the session** — pick one of 10 pitch types, set difficulty, optionally tag it to an idea, optionally carry forward context from a previous session.
+1. **Configure the session** — pick one of 10 pitch types, optionally tag it to an idea, optionally carry forward context from a previous session.
 2. **Voice conversation** — the Vapi Web SDK opens a WebRTC stream to the `smooth-task` edge function, which authenticates the user, validates credits, and configures the right Vapi assistant with the appropriate duration cap.
 3. **Live transcript** — partial and final transcript segments stream into the UI in real time. A countdown timer fires warnings at 2 minutes and 1 minute remaining, and auto-ends the call at zero.
 4. **End of call** — Vapi sends a webhook to `end-of-call-webhook`, which fetches the full call data (with retries while structured output is generating), saves the recording to Supabase Storage, parses the structured LLM output (with JSON repair), and deducts fractional credits via an atomic RPC call.
