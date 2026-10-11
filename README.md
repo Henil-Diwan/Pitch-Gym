@@ -8,6 +8,12 @@ The platform addresses a real gap in entrepreneurship education: high-quality pi
 
 ---
 
+
+https://github.com/user-attachments/assets/8758f77c-8930-4fcf-b6eb-5e3c18fb8e1b
+
+
+---
+
 ## Key Features
 
 - **Real-time voice AI conversations** powered by the Vapi Web SDK over WebRTC, with sub-second latency
